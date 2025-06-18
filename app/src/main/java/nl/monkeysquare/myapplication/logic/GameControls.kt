@@ -4,9 +4,10 @@ import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.gestures.detectVerticalDragGestures
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.pointer.pointerInput
+import nl.monkeysquare.myapplication.objects.Snake
 import nl.monkeysquare.myapplication.objects.SnakeHead
 
-fun Modifier.swipeControls(snake: SnakeHead): Modifier = this
+fun Modifier.swipeControls(snake: Snake): Modifier = this
     .pointerInput(Unit) {
         detectHorizontalDragGestures { _, dragAmount ->
             if (dragAmount > 0) {
