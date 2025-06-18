@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">MyApplication</string>
+
+    <!-- Strings for the main menu -->
+    <string name="title">Hello World!</string>
+    <string name="start_game">Start</string>
+    <string name="settings">Settings</string>
+    <string name="exit_game">Exit</string>
+
+    <!-- Strings for the settings menu -->
+    <string name="menuBack">Back to Main Menu</string>
+
+    <!-- Strings for the game screen -->
+    <string name="gameBack">Back</string>
+</resources>
