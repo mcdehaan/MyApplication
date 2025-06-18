@@ -11,14 +11,14 @@ class SnakeHead(
     private val gameWidth: Float,
     private val gameHeight: Float,
     private val speed: Float = 10f // Increased speed for better control
-) {
+) : Followable {
     enum class Direction {
         UP, DOWN, LEFT, RIGHT
     }
 
     // Initialize snake's position in a safer location within the game area
     private val initialPosition = getSafeStartPosition()
-    val position: MutableState<Offset> = mutableStateOf(initialPosition)
+    override val position: MutableState<Offset> = mutableStateOf(initialPosition)
     private var currentDirection: Direction by mutableStateOf(getInitialDirection(initialPosition))
 
     // Update snake's position based on the current direction

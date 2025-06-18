@@ -71,6 +71,18 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
                 val frameStartTime = System.currentTimeMillis()
                 val collision = snake.move()
                 
+                // Check for collision with apple
+                if (snake.checkAppleCollision(apple.position.value)) {
+                    // Grow the snake
+                    snake.grow()
+                    
+                    // Respawn the apple
+                    apple.respawn()
+                    
+                    // Increase score
+                    score++
+                }
+                
                 if (collision) {
                     gameOver = true
                     navController.navigate("game_over_screen/${score}")
@@ -98,7 +110,7 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
             .swipeControls(snake.snakeHead)) {
             BackButton(navController, Modifier.align(Alignment.TopStart).padding(16.dp))
             FPSCounter(fps, Modifier.align(Alignment.TopEnd).padding(16.dp))
-            SnakeComposable(snake.snakeHead)
+            SnakeComposable(snake)
             AppleComposable(apple)
         }
     }

@@ -16,7 +16,7 @@ fun AppleComposable(apple: Apple) {
 
         drawRoundRect(
             color = Color.Red,
-            topLeft = apple.position,
+            topLeft = apple.position.value,
             size = Size(squareSize, squareSize),
             cornerRadius = CornerRadius(8f)
         )
