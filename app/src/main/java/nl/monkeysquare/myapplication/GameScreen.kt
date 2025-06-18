@@ -9,6 +9,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.navigation.NavHostController
 import kotlinx.coroutines.delay
 
@@ -22,8 +24,17 @@ import nl.monkeysquare.myapplication.objects.Snake
 
 @Composable
 fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) {
-    val gameWidth = 1080f
-    val gameHeight = 1920f
+    // Get screen dimensions dynamically
+    val configuration = LocalConfiguration.current
+    val density = LocalDensity.current
+    
+    // Convert screen dimensions from dp to pixels
+    val screenWidthPx = with(density) { configuration.screenWidthDp.dp.toPx() }
+    val screenHeightPx = with(density) { configuration.screenHeightDp.dp.toPx() }
+    
+    // Account for potential UI elements by using slightly smaller dimensions
+    val gameWidth = screenWidthPx * 0.95f  // 95% of screen width
+    val gameHeight = screenHeightPx * 0.9f  // 90% of screen height
 
     // Create an instance of the Snake with a random starting position
     val snake = remember { Snake(gameWidth, gameHeight) }
