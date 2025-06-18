@@ -22,15 +22,12 @@ fun SnakeComposable(snake: Snake) {
             cornerRadius = CornerRadius(8f)
         )
         
-        // Draw all tail segments
-        snake.segments.forEachIndexed { index, segment ->
-            // Make each segment a slightly different shade of green
-            val segmentColor = Color.Green.copy(
-                alpha = 0.8f - (index * 0.05f).coerceAtLeast(0.3f)
-            )
-            
+        // Draw all tail segments with the same color
+        val tailColor = Color.Green.copy(alpha = 0.7f)
+        
+        snake.segments.forEach { segment ->
             drawRoundRect(
-                color = segmentColor,
+                color = tailColor,
                 topLeft = segment.position.value,
                 size = Size(squareSize, squareSize),
                 cornerRadius = CornerRadius(8f)
