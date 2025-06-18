@@ -29,6 +29,9 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
     // Create an instance of the Apple with random position
     val apple = remember { Apple(gameWidth, gameHeight) }
 
+    var score by remember { mutableIntStateOf(0) }
+    var gameOver by remember { mutableStateOf(false) }
+
     var totalTime by remember { mutableLongStateOf(0L) }
     var frameCount by remember { mutableIntStateOf(0) }
     val fps by remember {
@@ -37,8 +40,17 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
 
     LaunchedEffect(Unit) {
         while (true) {
+            if (gameOver) break
+            
             val frameStartTime = System.currentTimeMillis()
-            snake.move()
+            val collision = snake.move()
+            
+            if (collision) {
+                gameOver = true
+                navController.navigate("game_over_screen/${score}")
+                break
+            }
+            
             val frameTime = System.currentTimeMillis() - frameStartTime
             totalTime += frameTime
             frameCount++

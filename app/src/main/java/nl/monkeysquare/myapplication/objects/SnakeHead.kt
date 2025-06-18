@@ -21,13 +21,31 @@ class SnakeHead(
     private var currentDirection: Direction by mutableStateOf(Direction.RIGHT)
 
     // Update snake's position based on the current direction
-    fun move() {
-        position.value = when (currentDirection) {
+    fun move(): Boolean {
+        // First calculate the new position based on direction
+        val newPosition = when (currentDirection) {
             Direction.UP -> position.value.copy(y = position.value.y - speed)
             Direction.DOWN -> position.value.copy(y = position.value.y + speed)
             Direction.LEFT -> position.value.copy(x = position.value.x - speed)
             Direction.RIGHT -> position.value.copy(x = position.value.x + speed)
         }
+        
+        // Check if the new position is out of bounds
+        if (isOutOfBounds(newPosition)) {
+            return true // Collision detected
+        }
+        
+        // Update position if no collision
+        position.value = newPosition
+        return false // No collision
+    }
+    
+    // Check if the position is out of bounds
+    private fun isOutOfBounds(pos: Offset): Boolean {
+        val squareSize = 50f // Same size as in SnakeComposable
+        
+        return pos.x < 0 || pos.x + squareSize > gameWidth ||
+               pos.y < 0 || pos.y + squareSize > gameHeight
     }
 
     // Change the direction of the snake

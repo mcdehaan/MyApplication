@@ -27,6 +27,10 @@ class MainActivity : ComponentActivity() {
                     composable("main_menu") { MainScreen(navController) }
                     composable("settings_screen") { SettingsScreen(navController) }
                     composable("game_screen") { GameScreen(navController) }
+                    composable("game_over_screen/{score}") { backStackEntry ->
+                        val score = backStackEntry.arguments?.getString("score")?.toIntOrNull() ?: 0
+                        GameOverScreen(navController, score)
+                    }
                 }
             }
         }

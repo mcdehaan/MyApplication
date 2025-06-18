@@ -23,9 +23,10 @@ class Snake(
         get() = head
 
     // Move the entire snake (both head and tail)
-    fun move() {
-        head.move()
+    fun move(): Boolean {
+        val collision = head.move()
         tail.move()
+        return collision
     }
 
     // Change the direction of the snake's head
