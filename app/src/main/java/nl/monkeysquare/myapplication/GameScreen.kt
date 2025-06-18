@@ -56,10 +56,10 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
 
     Box(modifier = modifier
         .fillMaxSize()
-        .swipeControls(snake)) {
+        .swipeControls(snake.snakeHead)) {
         BackButton(navController, Modifier.align(Alignment.TopStart).padding(16.dp))
         FPSCounter(fps, Modifier.align(Alignment.TopEnd).padding(16.dp))
-        SnakeComposable(snake)
+        SnakeComposable(snake.snakeHead)
         AppleComposable(apple)
     }
 }

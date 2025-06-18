@@ -18,6 +18,10 @@ class Snake(
     val headPosition: MutableState<Offset> = head.position
     val tailPosition: MutableState<Offset> = tail.position
 
+    // Expose the snake's head
+    val snakeHead: SnakeHead
+        get() = head
+
     // Move the entire snake (both head and tail)
     fun move() {
         head.move()
