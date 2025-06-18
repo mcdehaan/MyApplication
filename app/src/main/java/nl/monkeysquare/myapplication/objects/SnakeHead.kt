@@ -16,9 +16,10 @@ class SnakeHead(
         UP, DOWN, LEFT, RIGHT
     }
 
-    // Initialize snake's position randomly within the game area
-    val position: MutableState<Offset> = mutableStateOf(getRandomPosition())
-    private var currentDirection: Direction by mutableStateOf(Direction.RIGHT)
+    // Initialize snake's position in a safer location within the game area
+    private val initialPosition = getSafeStartPosition()
+    val position: MutableState<Offset> = mutableStateOf(initialPosition)
+    private var currentDirection: Direction by mutableStateOf(getInitialDirection(initialPosition))
 
     // Update snake's position based on the current direction
     fun move(): Boolean {
@@ -60,10 +61,43 @@ class SnakeHead(
         }
     }
 
-    // Generate a random position within the game bounds
-    private fun getRandomPosition(): Offset {
-        val x = Random.nextFloat() * gameWidth
-        val y = Random.nextFloat() * gameHeight
+    // Generate a safe starting position away from edges
+    private fun getSafeStartPosition(): Offset {
+        // Place the snake in the middle third of the screen
+        val safeMinX = gameWidth * 0.33f
+        val safeMaxX = gameWidth * 0.67f
+        val safeMinY = gameHeight * 0.33f
+        val safeMaxY = gameHeight * 0.67f
+        
+        val x = safeMinX + (safeMaxX - safeMinX) * Random.nextFloat()
+        val y = safeMinY + (safeMaxY - safeMinY) * Random.nextFloat()
+        
         return Offset(x, y)
+    }
+    
+    // Determine the best initial direction based on position
+    private fun getInitialDirection(pos: Offset): Direction {
+        val centerX = gameWidth / 2
+        val centerY = gameHeight / 2
+        
+        // Move toward the center of the screen
+        return when {
+            pos.x < centerX && pos.y < centerY -> {
+                // Top-left quadrant - move right or down
+                if (Random.nextBoolean()) Direction.RIGHT else Direction.DOWN
+            }
+            pos.x >= centerX && pos.y < centerY -> {
+                // Top-right quadrant - move left or down
+                if (Random.nextBoolean()) Direction.LEFT else Direction.DOWN
+            }
+            pos.x < centerX && pos.y >= centerY -> {
+                // Bottom-left quadrant - move right or up
+                if (Random.nextBoolean()) Direction.RIGHT else Direction.UP
+            }
+            else -> {
+                // Bottom-right quadrant - move left or up
+                if (Random.nextBoolean()) Direction.LEFT else Direction.UP
+            }
+        }
     }
 }
