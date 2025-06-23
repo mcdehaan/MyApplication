@@ -2,6 +2,7 @@ package nl.monkeysquare.myapplication.objects
 
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.geometry.Offset
@@ -20,6 +21,14 @@ class SnakeHead(
     private val initialPosition = getSafeStartPosition()
     override val position: MutableState<Offset> = mutableStateOf(initialPosition)
     private var currentDirection: Direction by mutableStateOf(getInitialDirection(initialPosition))
+    
+    // Keep track of position history for tail segments to follow
+    private val positionHistory = mutableStateListOf<Offset>()
+    
+    init {
+        // Initialize history with starting position
+        positionHistory.add(initialPosition)
+    }
 
     // Update snake's position based on the current direction
     fun move(): Boolean {
@@ -38,6 +47,15 @@ class SnakeHead(
         
         // Update position if no collision
         position.value = newPosition
+        
+        // Add new position to history
+        positionHistory.add(0, position.value)
+        
+        // Keep history at a reasonable size
+        if (positionHistory.size > 100) { // arbitrary limit to avoid memory issues
+            positionHistory.removeAt(positionHistory.size - 1)
+        }
+        
         return false // No collision
     }
     
@@ -99,5 +117,10 @@ class SnakeHead(
                 if (Random.nextBoolean()) Direction.LEFT else Direction.UP
             }
         }
+    }
+    
+    // Implement the interface method to provide position history
+    override fun getPositionHistory(): List<Offset> {
+        return positionHistory
     }
 }
