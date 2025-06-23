@@ -40,11 +40,9 @@ class Snake(
             segment.move()
         }
         
-        // Check for collision with tail segments
-        val tailCollision = checkTailCollision()
-        
-        // Return true if there's a collision with either wall or tail
-        return wallCollision || tailCollision
+        // At this point, we know there's no wall collision
+        // Check for collision with tail segments only
+        return checkTailCollision()
     }
     
     // Change the direction of the snake's head
@@ -54,12 +52,15 @@ class Snake(
     
     // Add a new tail segment when the snake eats an apple
     fun grow() {
-        val following = if (tailSegments.isEmpty()) {
-            // First segment follows the head
-            head
+        // Determine what the new segment should follow
+        val following: Followable
+        
+        // If we don't have any tail segments yet, follow the head directly
+        if (tailSegments.size == 0) {
+            following = head
         } else {
-            // New segment follows the last tail segment
-            tailSegments.last()
+            // Otherwise, follow the last tail segment
+            following = tailSegments.last()
         }
         
         // Create and add the new tail segment

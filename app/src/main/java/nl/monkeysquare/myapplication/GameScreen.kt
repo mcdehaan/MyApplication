@@ -21,11 +21,19 @@ import nl.monkeysquare.myapplication.logic.FPSCounter
 import nl.monkeysquare.myapplication.logic.swipeControls
 import nl.monkeysquare.myapplication.objects.Apple
 import nl.monkeysquare.myapplication.objects.Snake
+import nl.monkeysquare.myapplication.data.GameSettingsViewModel
 
 @Composable
-fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) {
+fun GameScreen(
+    navController: NavHostController,
+    settingsViewModel: GameSettingsViewModel,
+    modifier: Modifier = Modifier
+) {
     // Get the current density
     val density = LocalDensity.current
+    
+    // Get current settings
+    val settings by settingsViewModel.settings.collectAsState()
     
     // Create a BoxWithConstraints to get the actual size after layout
     BoxWithConstraints(modifier = modifier.fillMaxSize()) {
@@ -50,39 +58,34 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
         }
 
         LaunchedEffect(Unit) {
-            while (true) {
-                if (gameOver) break
-                
+            while (!gameOver) {
                 val frameStartTime = System.currentTimeMillis()
+                
+                // Move the snake and check for collisions
                 val collision = snake.move()
-                
-                // Check for collision with apple
-                if (snake.checkAppleCollision(apple.position.value)) {
-                    // Grow the snake
-                    snake.grow()
-                    
-                    // Respawn the apple
-                    apple.respawn()
-                    
-                    // Increase score
-                    score++
-                }
-                
                 if (collision) {
                     gameOver = true
-                    navController.navigate("game_over_screen/${score}")
+                    navController.navigate("game_over_screen/$score")
                     break
                 }
                 
-                val frameTime = System.currentTimeMillis() - frameStartTime
-                totalTime += frameTime
-                frameCount++
-
-                if (totalTime >= 1000L) {
-                    totalTime = 0L
-                    frameCount = 0
+                // Check if the snake eats the apple
+                if (snake.checkAppleCollision(apple.position.value)) {
+                    // Move the apple to a new random position
+                    apple.respawn()
+                    
+                    // Grow the snake
+                    snake.grow()
+                    
+                    // Increase the score
+                    score++
                 }
-
+                
+                // Update FPS calculation
+                totalTime += System.currentTimeMillis() - frameStartTime
+                frameCount++
+                
+                // Cap frame rate to about 60 FPS
                 val frameDuration = System.currentTimeMillis() - frameStartTime
                 val delayTime = (16L - frameDuration).coerceAtLeast(0L)
                 delay(delayTime)
@@ -93,8 +96,15 @@ fun GameScreen(navController: NavHostController, modifier: Modifier = Modifier) 
             .fillMaxSize()
             .border(width = 2.dp, color = Color.Black)
             .swipeControls(snake)) {
+            // Back button at top left
             BackButton(navController, Modifier.align(Alignment.TopStart).padding(16.dp))
-            FPSCounter(fps, Modifier.align(Alignment.TopEnd).padding(16.dp))
+            
+            // Only show FPS counter if enabled in settings
+            if (settings.showFpsCounter) {
+                FPSCounter(fps, Modifier.align(Alignment.TopEnd).padding(16.dp))
+            }
+            
+            // Game elements
             SnakeComposable(snake)
             AppleComposable(apple)
         }
