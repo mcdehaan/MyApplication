@@ -27,14 +27,24 @@ class Snake(
     
     // Move the entire snake (head and all tail segments)
     fun move(): Boolean {
-        val collision = head.move()
+        // First check if the head's movement would cause a wall collision
+        val wallCollision = head.move()
+        
+        // If we already have a wall collision, return immediately
+        if (wallCollision) {
+            return true
+        }
         
         // Move each tail segment
         tailSegments.forEachIndexed { index, segment ->
             segment.move()
         }
         
-        return collision
+        // Check for collision with tail segments
+        val tailCollision = checkTailCollision()
+        
+        // Return true if there's a collision with either wall or tail
+        return wallCollision || tailCollision
     }
     
     // Change the direction of the snake's head
@@ -70,5 +80,47 @@ class Snake(
                 headPos.x + snakeSize > applePosition.x &&
                 headPos.y < applePosition.y + appleSize &&
                 headPos.y + snakeSize > applePosition.y)
+    }
+    
+    // Check if the snake's head collides with any tail segment
+    private fun checkTailCollision(): Boolean {
+        // Skip collision check if the snake is too short
+        if (tailSegments.size < 5) {
+            return false
+        }
+        
+        val headPos = head.position.value
+        val headSize = 50f // Same size as in SnakeComposable
+        val tailSize = headSize * 0.95f // 5% smaller as set in SnakeComposable
+        
+        // Only check segments that are far enough away from the head
+        // The first few segments will always be close to the head
+        for (i in 5 until tailSegments.size) {
+            val segment = tailSegments[i]
+            val segmentPos = segment.position.value
+            
+            // Calculate the offset applied to tail segments
+            val tailOffset = (headSize - tailSize) / 2
+            
+            // Adjust the segment position to account for the centering offset
+            val adjustedSegmentPos = Offset(
+                segmentPos.x + tailOffset,
+                segmentPos.y + tailOffset
+            )
+            
+            // Check for collision (box collision)
+            val collision = (
+                headPos.x < adjustedSegmentPos.x + tailSize &&
+                headPos.x + headSize > adjustedSegmentPos.x &&
+                headPos.y < adjustedSegmentPos.y + tailSize &&
+                headPos.y + headSize > adjustedSegmentPos.y
+            )
+            
+            if (collision) {
+                return true
+            }
+        }
+        
+        return false
     }
 }
